@@ -1,6 +1,8 @@
 # flutter_app
 
-A new Flutter project.
+Flutter UI mẫu của nhóm, kèm tầng dữ liệu offline CAM-08/09/10 tại lib/src/data.
+
+Xem [hướng dẫn bàn giao](../../../docs/cam/cam-08-10-offline.md) để nối Repository/Sync vào Auth và UI. main.dart vẫn là giao diện mẫu, chưa tự sử dụng module offline. Web cần tạo SQLite worker/WASM trước khi chạy/build; hướng dẫn có lệnh và các giới hạn nền tảng.
 
 ## Getting Started
 

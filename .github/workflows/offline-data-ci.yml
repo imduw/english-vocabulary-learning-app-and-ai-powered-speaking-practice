@@ -1,0 +1,78 @@
+name: Offline data CI
+
+on:
+  pull_request:
+    paths: ['app/frontend/flutter_app/**', 'app/backend/**', '.github/workflows/offline-data-ci.yml']
+  push:
+    branches: [develop, main, 'feature/**', 'fix/**']
+    paths: ['app/frontend/flutter_app/**', 'app/backend/**', '.github/workflows/offline-data-ci.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: offline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/backend/package-lock.json
+      - name: Install pinned Flutter SDK
+        run: |
+          git clone --depth 1 --branch 3.47.2 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Resolve locked Dart dependencies
+        working-directory: app/frontend/flutter_app
+        run: flutter pub get --enforce-lockfile
+      - name: Analyze and test data layer
+        working-directory: app/frontend/flutter_app
+        run: |
+          flutter analyze --no-pub
+          flutter test --no-pub
+      - name: Install backend dependencies
+        working-directory: app/backend
+        run: npm ci --ignore-scripts
+      - name: Start disposable database
+        working-directory: app/backend
+        run: docker compose up -d --wait db
+      - name: Real Dart SQLite, HTTP and PostgreSQL integration
+        working-directory: app/backend
+        run: |
+          npm run build
+          node scripts/verify-local.mjs --offline-client
+      - name: Real browser SQLite SharedWorker and migration
+        working-directory: app/backend
+        run: |
+          node scripts/setup-offline-web.mjs --test
+          node scripts/check-offline-web.mjs
+      - name: Generate application Web assets
+        working-directory: app/backend
+        run: node scripts/setup-offline-web.mjs
+      - name: Build Web application
+        working-directory: app/frontend/flutter_app
+        run: flutter build web
+      - name: Upload sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: offline-data-evidence
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            docs/cam/benchmarks/offline-client-http.json
+            docs/cam/benchmarks/offline-web.json
+      - name: Stop disposable database
+        if: always()
+        working-directory: app/backend
+        run: docker compose down

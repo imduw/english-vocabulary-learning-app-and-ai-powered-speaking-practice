@@ -1,5 +1,10 @@
 # Project Documentation
 
+## Hồ sơ đang soạn
+
+- [Hồ sơ backend của Cảm](cam/README.md) — yêu cầu dữ liệu, ERD, NestJS, migrations, API/Auth/CRUD/progress/sync và kết quả kiểm thử; chờ review nhóm.
+- [Dữ liệu offline CAM-08/09/10](cam/cam-08-10-offline.md) — SQLite/migration, FIFO/ACK, retry/conflict và hướng dẫn nối UI/Auth.
+
 Thư mục này được sử dụng để lưu trữ toàn bộ tài liệu dự án trong tương lai.
 
 ## Mục đích các tài liệu sẽ được bổ sung

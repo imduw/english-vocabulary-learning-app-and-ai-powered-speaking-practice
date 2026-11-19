@@ -1,0 +1,81 @@
+name: Backend CI
+
+on:
+  pull_request:
+    paths:
+      - 'app/backend/**'
+      - 'contracts/**'
+      - '.github/workflows/backend-ci.yml'
+  push:
+    branches: [develop, main, 'feature/**', 'fix/**']
+    paths:
+      - 'app/backend/**'
+      - 'contracts/**'
+      - '.github/workflows/backend-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: app/backend
+    env:
+      NODE_ENV: test
+      OCR_WARMUP: 'false'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/backend/package-lock.json
+      - name: Install locked development dependencies
+        run: npm ci --ignore-scripts
+      - name: Unit, embedded SQL, API contract and TypeScript coverage gate
+        run: npm run test:coverage
+      - name: Start disposable PostgreSQL
+        run: docker compose up -d --wait db
+      - name: PostgreSQL HTTP, ACID, load, consistency and reconnect
+        run: npm run test:postgres
+      - name: Repeat integration without retrying failures
+        run: npm run test:postgres
+      - name: CAM-06 progress across four backend processes
+        run: npm run benchmark:progress
+      - name: Backup and isolated restore drill
+        run: npm run test:backup
+      - name: Build production OCR backend
+        run: docker compose up --build -d --wait backend
+      - name: Real native OCR integration
+        run: docker compose exec -T backend node scripts/check-ocr-http.mjs --output /tmp/ocr-ci.json
+      - name: Collect native OCR result
+        if: always()
+        run: docker compose cp backend:/tmp/ocr-ci.json coverage/ocr-ci.json
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-test-evidence
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            app/backend/coverage/lcov.info
+            app/backend/coverage/coverage-summary.json
+            app/backend/coverage/ocr-ci.json
+            docs/cam/benchmarks/backend-coverage.json
+            docs/cam/benchmarks/backend-load.json
+            docs/cam/benchmarks/progress-multiprocess.json
+            docs/cam/benchmarks/backup-restore-local.json
+      - name: Stop disposable services
+        if: always()
+        run: docker compose down

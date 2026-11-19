@@ -4,10 +4,20 @@
 Ứng dụng học từ vựng tiếng Anh qua ngữ cảnh thực tế sử dụng công nghệ OCR và luyện phát âm, nói tiếng Anh tương tác với AI.
 
 ## Trạng thái dự án (Current Project Status)
-- Giai đoạn: **Khởi tạo nền móng dự án (Project Foundation Initialization)**.
-- Đang hoàn tất cấu trúc monorepo và thiết lập Flutter application tiêu chuẩn.
+- Giai đoạn: **Xây dựng và kiểm thử Backend/API**.
+- Phần của Cảm gồm backend, database, Auth phía server và [tầng dữ liệu offline CAM-08/09/10](docs/cam/cam-08-10-offline.md); giao diện mẫu của nhóm giữ nguyên.
+- Backend có NestJS, Supabase Auth/JWT, API hồ sơ và CRUD bộ thẻ/từ vựng; đã kiểm thử Supabase development thật. Xem [hướng dẫn Backend](app/backend/README.md) và [tiến độ CAM](docs/cam/implementation-status.md).
+- Backend có API batch/receipt/delta, tombstone, version conflict và review feed; xem [CAM-09/10 phía server](docs/cam/cam-09-10-sync.md).
+- Backend có API ghi lượt ôn, lịch SM-2 và thống kê theo múi giờ; xem [CAM-06](docs/cam/cam-06-progress.md).
+- Backend đã hỗ trợ tag/nhãn và sắp xếp từ vựng, giữ nhãn đúng version khi sync; xem [CAM-02/05](docs/cam/cam-05-tags.md). Schema 13 bảng/7 migration; benchmark có tag đạt 24 ca query p95 <50ms trên PostgreSQL local.
+
+- Backend đã có OCR JPEG/PNG/WebP, boxes/câu ngữ cảnh/ngôn ngữ; native benchmark trung bình 1,89 giây/trang trên bộ A4 thử nghiệm. Xem [CAM-13](docs/cam/cam-13-ocr.md).
 
 ## Cấu trúc Repository (Repository Structure)
+
+Auth backend: [CAM-07](docs/cam/cam-07-auth.md) có ba route register/login/refresh tích hợp Supabase; mật khẩu và refresh rotation do provider quản lý, đã kiểm chứng với tài khoản thử.
+
+Hướng dẫn bàn giao backend: [CAM-12](docs/cam/cam-12-operations.md), gồm onboarding, Postman environments, backup/restore, triển khai và troubleshooting Auth/sync.
 ```text
 english-vocabulary-learning-app-and-ai-powered-speaking-practice/
 │
@@ -15,7 +25,7 @@ english-vocabulary-learning-app-and-ai-powered-speaking-practice/
 │   ├── frontend/
 │   │   └── flutter_app/     # Ứng dụng Flutter tiêu chuẩn (Android & Web)
 │   └── backend/
-│       └── README.md        # Tài liệu trạng thái Backend (chờ thống nhất công nghệ)
+│       └── README.md        # Hướng dẫn NestJS, migration và kiểm thử
 │
 ├── docs/
 │   └── README.md            # Nơi lưu tài liệu dự án (Requirements, Architecture, API, UI/UX)
@@ -31,7 +41,7 @@ english-vocabulary-learning-app-and-ai-powered-speaking-practice/
 ## Công nghệ sử dụng (Technology Stack)
 - **Frontend:** Flutter & Dart.
 - **Target Platforms:** Android & Web.
-- **Backend:** Chưa quyết định (Pending team decision).
+- **Backend:** NestJS/TypeScript, PostgreSQL; định hướng Supabase Auth/Storage theo thông tin mới của Cảm. Thiết kế và hợp đồng tích hợp chờ nhóm review.
 
 ## Hướng dẫn thiết lập môi trường phát triển (Development Setup)
 
@@ -49,6 +59,7 @@ english-vocabulary-learning-app-and-ai-powered-speaking-practice/
 2. Cài đặt dependencies:
    ```bash
    flutter pub get
+   dart run build_runner build
    ```
 3. Kiểm tra code:
    ```bash

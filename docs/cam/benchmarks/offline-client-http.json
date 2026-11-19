@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-11-19T21:39:51.062Z",
+  "environment": "Dart SQLite file stores + Nest HTTP + local PostgreSQL + ES256/JWKS fixture",
+  "offline_client_pass": true,
+  "checks": [
+    "dart_offline_restart_lost_reply_exact_receipt_replay",
+    "dart_two_device_disjoint_conflict_rebase",
+    "dart_overlap_audit_and_recovery_as_new_card",
+    "dart_server_and_local_account_isolation",
+    "dart_remote_delete_defeats_edit_without_orphans"
+  ],
+  "resources_closed": true
+}

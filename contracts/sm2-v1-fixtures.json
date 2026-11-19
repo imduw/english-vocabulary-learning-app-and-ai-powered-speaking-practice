@@ -1,0 +1,17 @@
+{
+  "algorithm_version": "sm2-v1",
+  "start": "2026-11-01T12:00:00.000Z",
+  "cases": [
+    {"qualities":[0],"repetitions":0,"interval_days":1,"ease_factor":1.7},
+    {"qualities":[1],"repetitions":0,"interval_days":1,"ease_factor":1.96},
+    {"qualities":[2],"repetitions":0,"interval_days":1,"ease_factor":2.18},
+    {"qualities":[3],"repetitions":1,"interval_days":1,"ease_factor":2.36},
+    {"qualities":[4],"repetitions":1,"interval_days":1,"ease_factor":2.5},
+    {"qualities":[5],"repetitions":1,"interval_days":1,"ease_factor":2.6},
+    {"qualities":[4,4,4],"repetitions":3,"interval_days":15,"ease_factor":2.5},
+    {"qualities":[5,5,5],"repetitions":3,"interval_days":17,"ease_factor":2.8},
+    {"qualities":[3,3,3],"repetitions":3,"interval_days":14,"ease_factor":2.08},
+    {"qualities":[4,4,4,0,4,4],"repetitions":2,"interval_days":6,"ease_factor":1.7},
+    {"qualities":[0,0,0,0],"repetitions":0,"interval_days":1,"ease_factor":1.3}
+  ]
+}

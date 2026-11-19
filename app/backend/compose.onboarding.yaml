@@ -1,0 +1,8 @@
+# Compose >=2.24.4. Isolated drill only: separate project, fresh volume,
+# no DB host port, and a random loopback API port. Base services stay unchanged.
+services:
+  db:
+    ports: !reset []
+  backend:
+    ports: !override
+      - "127.0.0.1::3000"

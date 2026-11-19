@@ -1,0 +1,5363 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CAM — Vocabulary Backend API contract",
+    "version": "0.9.0-draft",
+    "description": "Supabase-backed register/login/refresh, profile, vocabulary/tags, sync, SM-2 and OCR. Auth passwords/rotation remain managed by Supabase; draft awaits team review."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Current backend"
+    }
+  ],
+  "security": [
+    {
+      "SupabaseBearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health"
+    },
+    {
+      "name": "Profile"
+    },
+    {
+      "name": "Decks"
+    },
+    {
+      "name": "Vocabulary"
+    },
+    {
+      "name": "Sync"
+    },
+    {
+      "name": "Progress"
+    },
+    {
+      "name": "OCR"
+    },
+    {
+      "name": "Auth"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getReadiness",
+        "tags": [
+          "Health"
+        ],
+        "summary": "Check database readiness",
+        "x-implementation-status": "implemented",
+        "description": "Runs SELECT 1; 200 when reachable, 503 otherwise.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "database": "up"
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "security": []
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "getLiveness",
+        "tags": [
+          "Health"
+        ],
+        "summary": "Check HTTP process",
+        "x-implementation-status": "implemented",
+        "description": "Independent of database availability.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "application": "up"
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/user/profile": {
+      "get": {
+        "operationId": "getProfile",
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Get current profile",
+        "x-implementation-status": "implemented",
+        "description": "Implemented: bearer token verified using project JWKS. Identity comes from token; no user_id input. GET provisions the profile idempotently; PATCH requires matching base_version and at least one editable field. Missing account returns 401, deleted profile is inaccessible.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "user_id": "10000000-0000-4000-8000-000000000001",
+                    "created_at": "2026-11-15T00:00:00Z",
+                    "updated_at": "2026-11-15T00:00:00Z",
+                    "version": "1",
+                    "deleted_at": null,
+                    "display_name": "Learner A",
+                    "timezone": "Asia/Ho_Chi_Minh"
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateProfile",
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Update display name or timezone",
+        "x-implementation-status": "implemented",
+        "description": "Implemented: bearer token verified using project JWKS. Identity comes from token; no user_id input. GET provisions the profile idempotently; PATCH requires matching base_version and at least one editable field. Missing account returns 401, deleted profile is inaccessible.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "user_id": "10000000-0000-4000-8000-000000000001",
+                    "created_at": "2026-11-15T00:00:00Z",
+                    "updated_at": "2026-11-15T00:00:00Z",
+                    "version": "1",
+                    "deleted_at": null,
+                    "display_name": "Learner A",
+                    "timezone": "Asia/Ho_Chi_Minh"
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdate"
+              },
+              "example": {
+                "base_version": "1",
+                "display_name": "Cảm",
+                "timezone": "Asia/Ho_Chi_Minh"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/decks": {
+      "get": {
+        "operationId": "listDecks",
+        "tags": [
+          "Decks"
+        ],
+        "summary": "List active decks",
+        "x-implementation-status": "implemented",
+        "description": "Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeckListResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": [
+                    {
+                      "id": "20000000-0000-4000-8000-000000000001",
+                      "user_id": "10000000-0000-4000-8000-000000000001",
+                      "created_at": "2026-11-15T00:00:00Z",
+                      "updated_at": "2026-11-15T00:00:00Z",
+                      "version": "1",
+                      "deleted_at": null,
+                      "name": "Everyday contexts",
+                      "description": null
+                    }
+                  ],
+                  "error": null,
+                  "metadata": {
+                    "pagination": {
+                      "limit": 20,
+                      "offset": 0,
+                      "has_more": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createDeck",
+        "tags": [
+          "Decks"
+        ],
+        "summary": "Create a deck with a client UUID",
+        "x-implementation-status": "implemented",
+        "description": "Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeckResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "id": "20000000-0000-4000-8000-000000000001",
+                    "user_id": "10000000-0000-4000-8000-000000000001",
+                    "created_at": "2026-11-15T00:00:00Z",
+                    "updated_at": "2026-11-15T00:00:00Z",
+                    "version": "1",
+                    "deleted_at": null,
+                    "name": "Everyday contexts",
+                    "description": null
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeckCreate"
+              },
+              "example": {
+                "id": "20000000-0000-4000-8000-000000000001",
+                "name": "Everyday contexts"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/decks/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getDeck",
+        "tags": [
+          "Decks"
+        ],
+        "summary": "Get an active owned deck",
+        "x-implementation-status": "implemented",
+        "description": "Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeckResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "id": "20000000-0000-4000-8000-000000000001",
+                    "user_id": "10000000-0000-4000-8000-000000000001",
+                    "created_at": "2026-11-15T00:00:00Z",
+                    "updated_at": "2026-11-15T00:00:00Z",
+                    "version": "1",
+                    "deleted_at": null,
+                    "name": "Everyday contexts",
+                    "description": null
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateDeck",
+        "tags": [
+          "Decks"
+        ],
+        "summary": "Update deck fields with version check",
+        "x-implementation-status": "implemented",
+        "description": "Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeckResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "id": "20000000-0000-4000-8000-000000000001",
+                    "user_id": "10000000-0000-4000-8000-000000000001",
+                    "created_at": "2026-11-15T00:00:00Z",
+                    "updated_at": "2026-11-15T00:00:00Z",
+                    "version": "1",
+                    "deleted_at": null,
+                    "name": "Everyday contexts",
+                    "description": null
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeckUpdate"
+              },
+              "example": {
+                "base_version": "1",
+                "description": "Words from daily life"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteDeck",
+        "tags": [
+          "Decks"
+        ],
+        "summary": "Soft-delete deck and its cards atomically",
+        "x-implementation-status": "implemented",
+        "description": "Implemented; cascade soft-delete is a behavior awaiting team review. Base version must match. Already deleted or inaccessible deck returns 404; stale version returns 409.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletionResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "id": "20000000-0000-4000-8000-000000000001",
+                    "version": "2",
+                    "deleted_at": "2026-11-15T00:00:00Z"
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "base_version",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "description": "Positive bigint serialized as a decimal string, not a JavaScript number."
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/vocabulary": {
+      "get": {
+        "operationId": "listCards",
+        "tags": [
+          "Vocabulary"
+        ],
+        "summary": "List active cards",
+        "x-implementation-status": "implemented",
+        "description": "Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardListResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": [
+                    {
+                      "id": "30000000-0000-4000-8000-000000000001",
+                      "user_id": "10000000-0000-4000-8000-000000000001",
+                      "created_at": "2026-11-15T00:00:00Z",
+                      "updated_at": "2026-11-15T00:00:00Z",
+                      "version": "1",
+                      "deleted_at": null,
+                      "deck_id": "20000000-0000-4000-8000-000000000001",
+                      "source_document_id": null,
+                      "word": "bank",
+                      "meaning": "ngân hàng",
+                      "phonetic": null,
+                      "source_sentence": "I went to the bank.",
+                      "ai_example": null,
+                      "is_favorite": false,
+                      "tags": []
+                    }
+                  ],
+                  "error": null,
+                  "metadata": {
+                    "pagination": {
+                      "limit": 20,
+                      "offset": 0,
+                      "has_more": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "deck_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "description": "Case-insensitive literal substring in word, meaning or tag name. Local benchmark documented separately; not a production SLA."
+          },
+          {
+            "name": "is_favorite",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50
+            },
+            "description": "Exact label name, case-insensitive and NFC-normalized; combines with other filters."
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "updated_at",
+                "created_at",
+                "word"
+              ],
+              "default": "updated_at"
+            },
+            "description": "word uses case-insensitive lexical order; id ascending breaks ties."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createCard",
+        "tags": [
+          "Vocabulary"
+        ],
+        "summary": "Create one contextual card",
+        "x-implementation-status": "implemented",
+        "description": "Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "id": "30000000-0000-4000-8000-000000000001",
+                    "user_id": "10000000-0000-4000-8000-000000000001",
+                    "created_at": "2026-11-15T00:00:00Z",
+                    "updated_at": "2026-11-15T00:00:00Z",
+                    "version": "1",
+                    "deleted_at": null,
+                    "deck_id": "20000000-0000-4000-8000-000000000001",
+                    "source_document_id": null,
+                    "word": "bank",
+                    "meaning": "ngân hàng",
+                    "phonetic": null,
+                    "source_sentence": "I went to the bank.",
+                    "ai_example": null,
+                    "is_favorite": false,
+                    "tags": [
+                      "Travel"
+                    ]
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardCreate"
+              },
+              "example": {
+                "id": "30000000-0000-4000-8000-000000000001",
+                "deck_id": "20000000-0000-4000-8000-000000000001",
+                "word": "bank",
+                "meaning": "ngân hàng",
+                "source_sentence": "I went to the bank.",
+                "tags": [
+                  "Travel"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vocabulary/batch": {
+      "post": {
+        "operationId": "createCardsBatch",
+        "tags": [
+          "Vocabulary"
+        ],
+        "summary": "Create up to 100 cards atomically",
+        "x-implementation-status": "implemented",
+        "description": "Implemented. All-or-nothing transaction. Any invalid item, duplicate UUID, inaccessible or deleted parent rejects the entire batch. Duplicate word values are valid. UUID conflicts return 409; replay receipts are reserved for CAM-09. Response order matches request; no pagination metadata. Related resources outside the owner scope return 404; malformed item schemas return 422.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardListResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": [
+                    {
+                      "id": "30000000-0000-4000-8000-000000000001",
+                      "user_id": "10000000-0000-4000-8000-000000000001",
+                      "created_at": "2026-11-15T00:00:00Z",
+                      "updated_at": "2026-11-15T00:00:00Z",
+                      "version": "1",
+                      "deleted_at": null,
+                      "deck_id": "20000000-0000-4000-8000-000000000001",
+                      "source_document_id": null,
+                      "word": "bank",
+                      "meaning": "ngân hàng",
+                      "phonetic": null,
+                      "source_sentence": "I went to the bank.",
+                      "ai_example": null,
+                      "is_favorite": false,
+                      "tags": []
+                    }
+                  ],
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardBatch"
+              },
+              "example": {
+                "items": [
+                  {
+                    "id": "30000000-0000-4000-8000-000000000001",
+                    "deck_id": "20000000-0000-4000-8000-000000000001",
+                    "word": "bank",
+                    "meaning": "ngân hàng",
+                    "tags": []
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vocabulary/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getCard",
+        "tags": [
+          "Vocabulary"
+        ],
+        "summary": "Get an active owned card",
+        "x-implementation-status": "implemented",
+        "description": "Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "id": "30000000-0000-4000-8000-000000000001",
+                    "user_id": "10000000-0000-4000-8000-000000000001",
+                    "created_at": "2026-11-15T00:00:00Z",
+                    "updated_at": "2026-11-15T00:00:00Z",
+                    "version": "1",
+                    "deleted_at": null,
+                    "deck_id": "20000000-0000-4000-8000-000000000001",
+                    "source_document_id": null,
+                    "word": "bank",
+                    "meaning": "ngân hàng",
+                    "phonetic": null,
+                    "source_sentence": "I went to the bank.",
+                    "ai_example": null,
+                    "is_favorite": false,
+                    "tags": []
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateCard",
+        "tags": [
+          "Vocabulary"
+        ],
+        "summary": "Update supplied card fields with version check",
+        "x-implementation-status": "implemented",
+        "description": "Implemented. Retains PUT route from CAM-05. Partial update by explicit contract: omitted fields unchanged; null clears nullable fields. base_version and at least one editable field required.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "id": "30000000-0000-4000-8000-000000000001",
+                    "user_id": "10000000-0000-4000-8000-000000000001",
+                    "created_at": "2026-11-15T00:00:00Z",
+                    "updated_at": "2026-11-15T00:00:00Z",
+                    "version": "1",
+                    "deleted_at": null,
+                    "deck_id": "20000000-0000-4000-8000-000000000001",
+                    "source_document_id": null,
+                    "word": "bank",
+                    "meaning": "ngân hàng",
+                    "phonetic": null,
+                    "source_sentence": "I went to the bank.",
+                    "ai_example": null,
+                    "is_favorite": false,
+                    "tags": []
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardUpdate"
+              },
+              "example": {
+                "base_version": "1",
+                "is_favorite": true
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteCard",
+        "tags": [
+          "Vocabulary"
+        ],
+        "summary": "Soft-delete a card",
+        "x-implementation-status": "implemented",
+        "description": "Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletionResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "id": "30000000-0000-4000-8000-000000000001",
+                    "version": "2",
+                    "deleted_at": "2026-11-15T00:00:00Z"
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "base_version",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "description": "Positive bigint serialized as a decimal string, not a JavaScript number."
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/sync/batch": {
+      "post": {
+        "operationId": "syncBatch",
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Apply 1?100 mutations atomically with durable replay receipts",
+        "x-implementation-status": "implemented",
+        "description": "Parent-first client mutations. operation_id and wire content stay fixed on retry. Replayed receipts do not write again. Conflict rolls back all NEW mutations/receipts/log changes in the batch; earlier committed receipts remain. 409 SYNC_CONFLICT carries an owner-scoped server snapshot. No device-clock conflict arbitration. JSON body limit is 1 MiB; the reference offline client prepares batches of at most 512 KiB.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncBatch"
+              },
+              "example": {
+                "items": [
+                  {
+                    "operation_id": "40000000-0000-4000-8000-000000000001",
+                    "entity_type": "deck",
+                    "entity_id": "20000000-0000-4000-8000-000000000001",
+                    "action": "create",
+                    "payload": {
+                      "name": "Offline deck"
+                    },
+                    "base_version": null
+                  },
+                  {
+                    "operation_id": "40000000-0000-4000-8000-000000000002",
+                    "entity_type": "card",
+                    "entity_id": "30000000-0000-4000-8000-000000000001",
+                    "action": "create",
+                    "payload": {
+                      "deck_id": "20000000-0000-4000-8000-000000000001",
+                      "word": "bank",
+                      "meaning": "ng?n h?ng",
+                      "tags": []
+                    },
+                    "base_version": null
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncBatchResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "results": [
+                      {
+                        "operation_id": "40000000-0000-4000-8000-000000000001",
+                        "entity_type": "deck",
+                        "entity_id": "20000000-0000-4000-8000-000000000001",
+                        "record": {
+                          "id": "20000000-0000-4000-8000-000000000001",
+                          "user_id": "10000000-0000-4000-8000-000000000001",
+                          "created_at": "2026-11-15T00:00:00Z",
+                          "updated_at": "2026-11-15T00:00:00Z",
+                          "version": "1",
+                          "deleted_at": null,
+                          "name": "Everyday contexts",
+                          "description": null
+                        }
+                      },
+                      {
+                        "operation_id": "40000000-0000-4000-8000-000000000002",
+                        "entity_type": "card",
+                        "entity_id": "30000000-0000-4000-8000-000000000001",
+                        "record": {
+                          "id": "30000000-0000-4000-8000-000000000001",
+                          "user_id": "10000000-0000-4000-8000-000000000001",
+                          "created_at": "2026-11-15T00:00:00Z",
+                          "updated_at": "2026-11-15T00:00:00Z",
+                          "version": "1",
+                          "deleted_at": null,
+                          "deck_id": "20000000-0000-4000-8000-000000000001",
+                          "source_document_id": null,
+                          "word": "bank",
+                          "meaning": "ngân hàng",
+                          "phonetic": null,
+                          "source_sentence": "I went to the bank.",
+                          "ai_example": null,
+                          "is_favorite": false,
+                          "tags": []
+                        }
+                      }
+                    ]
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        }
+      }
+    },
+    "/api/v1/sync/changes": {
+      "get": {
+        "operationId": "syncChanges",
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Pull paginated changes and tombstones",
+        "x-implementation-status": "implemented",
+        "description": "Cursor is opaque, account-bound and validated; it is not an authorization credential. Server sequence is ordered under a per-owner transaction lock. A paging run retains its initial high-water mark; final cursor starts the next range. Log/tombstones are not pruned yet, so a full replay starts by omitting cursor. Persist records plus cursor in one local transaction.",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 2048,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncChangesResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "changes": [
+                      {
+                        "sequence": "1",
+                        "entity_type": "deck",
+                        "entity_id": "20000000-0000-4000-8000-000000000001",
+                        "record": {
+                          "id": "20000000-0000-4000-8000-000000000001",
+                          "user_id": "10000000-0000-4000-8000-000000000001",
+                          "created_at": "2026-11-15T00:00:00Z",
+                          "updated_at": "2026-11-15T00:00:00Z",
+                          "version": "1",
+                          "deleted_at": null,
+                          "name": "Everyday contexts",
+                          "description": null
+                        }
+                      },
+                      {
+                        "sequence": "2",
+                        "entity_type": "card",
+                        "entity_id": "30000000-0000-4000-8000-000000000001",
+                        "record": {
+                          "id": "30000000-0000-4000-8000-000000000001",
+                          "user_id": "10000000-0000-4000-8000-000000000001",
+                          "created_at": "2026-11-15T00:00:00Z",
+                          "updated_at": "2026-11-15T00:00:00Z",
+                          "version": "1",
+                          "deleted_at": null,
+                          "deck_id": "20000000-0000-4000-8000-000000000001",
+                          "source_document_id": null,
+                          "word": "bank",
+                          "meaning": "ngân hàng",
+                          "phonetic": null,
+                          "source_sentence": "I went to the bank.",
+                          "ai_example": null,
+                          "is_favorite": false,
+                          "tags": []
+                        }
+                      }
+                    ],
+                    "has_more": false,
+                    "next_cursor": "eyJ2IjoxLCJ1c2VyIjoiMTAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwiYWZ0ZXIiOiIyIiwidW50aWwiOm51bGx9"
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        }
+      }
+    },
+    "/api/v1/progress/review": {
+      "post": {
+        "operationId": "recordReview",
+        "tags": [
+          "Progress"
+        ],
+        "summary": "Record an idempotent SM-2 review",
+        "x-implementation-status": "implemented",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "event": {
+                      "id": "50000000-0000-4000-8000-000000000001",
+                      "card_id": "30000000-0000-4000-8000-000000000001",
+                      "quality": 4,
+                      "score": 80,
+                      "reviewed_at": "2026-11-16T00:00:00.000Z",
+                      "timezone_at_review": "Asia/Ho_Chi_Minh",
+                      "algorithm_version": "sm2-v1"
+                    },
+                    "state": {
+                      "card_id": "30000000-0000-4000-8000-000000000001",
+                      "algorithm_version": "sm2-v1",
+                      "repetitions": 1,
+                      "interval_days": 1,
+                      "ease_factor": 2.5,
+                      "total_reviews": 1,
+                      "last_reviewed_at": "2026-11-16T00:00:00.000Z",
+                      "due_at": "2026-11-17T00:00:00.000Z"
+                    }
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "description": "Same owner/event ID and content returns original receipt, even after card deletion. Changed content is 409. Reviewed time is strict UTC milliseconds (year >=2000), at most five minutes ahead. Late events replay by reviewed_at then UUID. Receipt state is as of processing, not a live state lookup. score is an optional assessment percent, separate from quality.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewInput"
+              },
+              "example": {
+                "id": "50000000-0000-4000-8000-000000000001",
+                "card_id": "30000000-0000-4000-8000-000000000001",
+                "quality": 4,
+                "score": 80,
+                "reviewed_at": "2026-11-16T00:00:00.000Z",
+                "timezone_at_review": "Asia/Ho_Chi_Minh",
+                "algorithm_version": "sm2-v1"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/progress/summary": {
+      "get": {
+        "operationId": "getProgressSummary",
+        "tags": [
+          "Progress"
+        ],
+        "summary": "Summarize active card mastery, due today and calendar streak",
+        "x-implementation-status": "implemented",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressSummary"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "timezone": "Asia/Ho_Chi_Minh",
+                    "today": "2026-11-16",
+                    "total_cards": 1,
+                    "new_count": 0,
+                    "relearning_count": 0,
+                    "learning_count": 1,
+                    "mastered_count": 0,
+                    "due_today_count": 0,
+                    "current_streak": 1,
+                    "total_reviews": 1,
+                    "activity": [
+                      {
+                        "day": "2026-11-16",
+                        "reviews": 1,
+                        "successful_reviews": 1
+                      }
+                    ]
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "description": "Profile timezone defines today and all historical activity days; changing it regroups history. Streak may end today or yesterday. Due today includes overdue reviewed cards before local tomorrow midnight; new cards are separate. Mastered is a product proxy: >=3 consecutive quality>=3 reviews. Activity is the latest 30 local calendar days with events; zero days are omitted. Audit totals/streak include deleted cards; mastery/due exclude them. No query parameters."
+      }
+    },
+    "/api/v1/progress/history": {
+      "get": {
+        "operationId": "getReviewHistory",
+        "tags": [
+          "Progress"
+        ],
+        "summary": "Read immutable review history",
+        "x-implementation-status": "implemented",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewHistory"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": [
+                    {
+                      "id": "50000000-0000-4000-8000-000000000001",
+                      "card_id": "30000000-0000-4000-8000-000000000001",
+                      "quality": 4,
+                      "score": 80,
+                      "reviewed_at": "2026-11-16T00:00:00.000Z",
+                      "timezone_at_review": "Asia/Ho_Chi_Minh",
+                      "algorithm_version": "sm2-v1",
+                      "received_at": "2026-11-16T00:00:00.000Z"
+                    }
+                  ],
+                  "error": null,
+                  "metadata": {
+                    "pagination": {
+                      "limit": 20,
+                      "offset": 0,
+                      "has_more": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "parameters": [
+          {
+            "name": "card_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2147483647,
+              "default": 0
+            }
+          }
+        ],
+        "description": "Sorted reviewed_at DESC, id ASC. Includes events for soft-deleted cards. Offset pagination may shift under concurrent insertion; it is not an offline sync cursor."
+      }
+    },
+    "/api/v1/progress/changes": {
+      "get": {
+        "operationId": "getReviewChanges",
+        "tags": [
+          "Progress"
+        ],
+        "summary": "Pull immutable reviews through a commit-ordered owner cursor",
+        "x-implementation-status": "implemented",
+        "description": "Separate reviews cursor, incompatible with deck/card cursors. Fixed upper bound per page traversal; new and late-arriving reviews appear on the next traversal. Sync cards first. Apply events, replay local states, and save cursor in one transaction. No retention/pruning yet.",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 2048
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewChanges"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "events": [],
+                    "has_more": false,
+                    "next_cursor": "example-cursor-replace-with-server-value"
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        }
+      }
+    },
+    "/api/v1/ocr/process": {
+      "post": {
+        "tags": [
+          "OCR"
+        ],
+        "summary": "Recognize a single JPEG/PNG/WebP document",
+        "operationId": "processOcr",
+        "x-implementation-status": "implemented",
+        "description": "Requires a verified Supabase JWT. Exactly one multipart field image, no other fields/query. Maximum 10 MiB and 16 megapixels; no animated images. 10 accepted upload attempts/minute/owner/process, one upload or OCR job at a time/process. Invalid bytes/MIME or corrupt images return 400; oversized upload 413; rate 429; busy/engine outage 503. All image data stays in memory/stdin; this endpoint does not persist a source_document. Preprocessing rotates EXIF, preserves aspect ratio, and maps boxes to upright original pixels. Contexts are segmented from recognized paragraphs, not generated or translated. OCR/language scores are not probabilities.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG/WebP bytes with a matching image MIME, maximum 10,485,760 bytes."
+                  }
+                },
+                "required": [
+                  "image"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recognized words, original-coordinate boxes and full sentence contexts. A valid blank image returns empty arrays and und language.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OcrResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "text": "Learning English is useful.",
+                    "confidence": 0.96,
+                    "language": {
+                      "code": "en",
+                      "confidence": 1,
+                      "method": "tinyld_text"
+                    },
+                    "image": {
+                      "width": 1200,
+                      "height": 1600,
+                      "processed_width": 1200,
+                      "processed_height": 1600,
+                      "coordinate_space": "upright_original_pixels"
+                    },
+                    "words": [
+                      {
+                        "index": 0,
+                        "text": "Learning",
+                        "confidence": 0.96,
+                        "bbox": {
+                          "x": 100,
+                          "y": 150,
+                          "width": 130,
+                          "height": 40
+                        },
+                        "sentence_index": 0,
+                        "context": "Learning English is useful."
+                      },
+                      {
+                        "index": 1,
+                        "text": "English",
+                        "confidence": 0.96,
+                        "bbox": {
+                          "x": 260,
+                          "y": 150,
+                          "width": 130,
+                          "height": 40
+                        },
+                        "sentence_index": 0,
+                        "context": "Learning English is useful."
+                      },
+                      {
+                        "index": 2,
+                        "text": "is",
+                        "confidence": 0.96,
+                        "bbox": {
+                          "x": 420,
+                          "y": 150,
+                          "width": 130,
+                          "height": 40
+                        },
+                        "sentence_index": 0,
+                        "context": "Learning English is useful."
+                      },
+                      {
+                        "index": 3,
+                        "text": "useful.",
+                        "confidence": 0.96,
+                        "bbox": {
+                          "x": 580,
+                          "y": 150,
+                          "width": 130,
+                          "height": 40
+                        },
+                        "sentence_index": 0,
+                        "context": "Learning English is useful."
+                      }
+                    ],
+                    "sentences": [
+                      {
+                        "index": 0,
+                        "text": "Learning English is useful.",
+                        "word_indices": [
+                          0,
+                          1,
+                          2,
+                          3
+                        ]
+                      }
+                    ]
+                  },
+                  "error": null,
+                  "metadata": {
+                    "processing_ms": 1100
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Image cannot be decoded or exceeds the supported image limits",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "INVALID_IMAGE",
+                    "message": "Image cannot be decoded or exceeds the supported image limits"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "413": {
+            "description": "Image must not exceed 10 MiB",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "IMAGE_TOO_LARGE",
+                    "message": "Image must not exceed 10 MiB"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Sentence contexts or recognized words exceed the page limit",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "IMAGE_TOO_COMPLEX",
+                    "message": "Sentence contexts or recognized words exceed the page limit"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "At most 10 OCR uploads per minute",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Seconds to wait; rate/capacity are per backend process."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "OCR_RATE_LIMITED",
+                    "message": "At most 10 OCR uploads per minute",
+                    "details": {
+                      "retry_after_seconds": 60
+                    }
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "description": "Service temporarily unavailable",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Seconds to wait; rate/capacity are per backend process."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "SERVICE_UNAVAILABLE",
+                    "message": "Service temporarily unavailable"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "registerAuth",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "register through Supabase Auth",
+        "security": [],
+        "x-implementation-status": "implemented",
+        "description": "Public JSON endpoint. No query parameters or owner/provider/redirect fields. Passwords are hashed/salted by Supabase; no local password/refresh-token table. Requires SUPABASE_PUBLISHABLE_KEY; missing configuration returns 503. Shared 30 attempts/60 seconds/socket IP/process, ignoring forwarded IP headers. Refresh tokens are opaque and rotate under Supabase reuse/parent exceptions, not strict immediate rejection of every prior token. Sign-up may send confirmation email per project settings; no confirmation emails are sent by automated integration tests.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRegister"
+              },
+              "example": {
+                "email": "learner@example.com",
+                "password": "Example-only-passphrase!"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registration accepted; confirmation may be required. No identity exposed until a session exists.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              },
+              "Pragma": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-cache"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "user": null,
+                    "session": null,
+                    "requires_email_confirmation": true
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "description": "Retry later",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Seconds before retry; rate limit is per socket IP/process.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Retry later"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "description": "Service temporarily unavailable",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Seconds before retry; rate limit is per socket IP/process.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "SERVICE_UNAVAILABLE",
+                    "message": "Service temporarily unavailable"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "loginAuth",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "login through Supabase Auth",
+        "security": [],
+        "x-implementation-status": "implemented",
+        "description": "Public JSON endpoint. No query parameters or owner/provider/redirect fields. Passwords are hashed/salted by Supabase; no local password/refresh-token table. Requires SUPABASE_PUBLISHABLE_KEY; missing configuration returns 503. Shared 30 attempts/60 seconds/socket IP/process, ignoring forwarded IP headers. Refresh tokens are opaque and rotate under Supabase reuse/parent exceptions, not strict immediate rejection of every prior token. Sign-up may send confirmation email per project settings; no confirmation emails are sent by automated integration tests.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthLogin"
+              },
+              "example": {
+                "email": "learner@example.com",
+                "password": "Example-only-passphrase!"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Supabase session verified against JWKS; client stores the new pair securely.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              },
+              "Pragma": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-cache"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "user": {
+                      "id": "10000000-0000-4000-8000-000000000001",
+                      "email": "learner@example.com"
+                    },
+                    "session": {
+                      "access_token": "EXAMPLE-ACCESS-TOKEN-NOT-VALID",
+                      "refresh_token": "EXAMPLE-REFRESH-TOKEN-NOT-VALID",
+                      "token_type": "bearer",
+                      "expires_in": 3600
+                    },
+                    "requires_email_confirmation": false
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "description": "Retry later",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Seconds before retry; rate limit is per socket IP/process.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Retry later"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "description": "Service temporarily unavailable",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Seconds before retry; rate limit is per socket IP/process.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "SERVICE_UNAVAILABLE",
+                    "message": "Service temporarily unavailable"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "refreshAuth",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "refresh through Supabase Auth",
+        "security": [],
+        "x-implementation-status": "implemented",
+        "description": "Public JSON endpoint. No query parameters or owner/provider/redirect fields. Passwords are hashed/salted by Supabase; no local password/refresh-token table. Requires SUPABASE_PUBLISHABLE_KEY; missing configuration returns 503. Shared 30 attempts/60 seconds/socket IP/process, ignoring forwarded IP headers. Refresh tokens are opaque and rotate under Supabase reuse/parent exceptions, not strict immediate rejection of every prior token. Sign-up may send confirmation email per project settings; no confirmation emails are sent by automated integration tests.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRefresh"
+              },
+              "example": {
+                "refresh_token": "EXAMPLE-REFRESH-TOKEN-NOT-VALID"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Supabase session verified against JWKS; client stores the new pair securely.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              },
+              "Pragma": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-cache"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "data": {
+                    "user": {
+                      "id": "10000000-0000-4000-8000-000000000001",
+                      "email": "learner@example.com"
+                    },
+                    "session": {
+                      "access_token": "EXAMPLE-ACCESS-TOKEN-NOT-VALID",
+                      "refresh_token": "EXAMPLE-REFRESH-TOKEN-NOT-VALID",
+                      "token_type": "bearer",
+                      "expires_in": 3600
+                    },
+                    "requires_email_confirmation": false
+                  },
+                  "error": null,
+                  "metadata": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "429": {
+            "description": "Retry later",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Seconds before retry; rate limit is per socket IP/process.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Retry later"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "description": "Service temporarily unavailable",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Seconds before retry; rate limit is per socket IP/process.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "data": null,
+                  "error": {
+                    "code": "SERVICE_UNAVAILABLE",
+                    "message": "Service temporarily unavailable"
+                  },
+                  "metadata": {
+                    "requestId": "example-request-id"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "SupabaseBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Supabase access token. Refresh token must never be sent here."
+      }
+    },
+    "schemas": {
+      "Metadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "pagination": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "offset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "has_more": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "limit",
+              "offset",
+              "has_more"
+            ]
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "details": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "field": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "field",
+                        "message"
+                      ]
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/SyncConflictDetails"
+                  },
+                  {
+                    "$ref": "#/components/schemas/OcrRetryDetails"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "Profile": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 120,
+            "nullable": true,
+            "minLength": 1
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$",
+            "description": "Positive bigint serialized as a decimal string, not a JavaScript number."
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "user_id",
+          "display_name",
+          "timezone",
+          "created_at",
+          "updated_at",
+          "version",
+          "deleted_at"
+        ]
+      },
+      "ProfileUpdate": {
+        "type": "object",
+        "minProperties": 2,
+        "additionalProperties": false,
+        "properties": {
+          "base_version": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$",
+            "description": "Positive bigint serialized as a decimal string, not a JavaScript number."
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 120,
+            "nullable": true,
+            "minLength": 1
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "base_version"
+        ]
+      },
+      "Deck": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$",
+            "description": "Positive bigint serialized as a decimal string, not a JavaScript number."
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "created_at",
+          "updated_at",
+          "version",
+          "deleted_at",
+          "name",
+          "description"
+        ]
+      },
+      "DeckCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "DeckUpdate": {
+        "type": "object",
+        "minProperties": 2,
+        "additionalProperties": false,
+        "properties": {
+          "base_version": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$",
+            "description": "Positive bigint serialized as a decimal string, not a JavaScript number."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000,
+            "nullable": true
+          }
+        },
+        "required": [
+          "base_version"
+        ]
+      },
+      "Card": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$",
+            "description": "Positive bigint serialized as a decimal string, not a JavaScript number."
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deck_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_document_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "word": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1
+          },
+          "meaning": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1
+          },
+          "phonetic": {
+            "type": "string",
+            "maxLength": 300,
+            "nullable": true
+          },
+          "source_sentence": {
+            "type": "string",
+            "maxLength": 10000,
+            "nullable": true
+          },
+          "ai_example": {
+            "type": "string",
+            "maxLength": 10000,
+            "nullable": true
+          },
+          "is_favorite": {
+            "type": "boolean",
+            "default": false
+          },
+          "tags": {
+            "type": "array",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "pattern": "\\S"
+            },
+            "description": "Owner-scoped label names: trimmed, NFC-normalized, case-insensitive uniqueness. Existing owner spelling is canonical. Omit on update to preserve, [] to clear."
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "created_at",
+          "updated_at",
+          "version",
+          "deleted_at",
+          "deck_id",
+          "source_document_id",
+          "word",
+          "meaning",
+          "phonetic",
+          "source_sentence",
+          "ai_example",
+          "is_favorite",
+          "tags"
+        ]
+      },
+      "CardCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "deck_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_document_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "word": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1
+          },
+          "meaning": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1
+          },
+          "phonetic": {
+            "type": "string",
+            "maxLength": 300,
+            "nullable": true
+          },
+          "source_sentence": {
+            "type": "string",
+            "maxLength": 10000,
+            "nullable": true
+          },
+          "ai_example": {
+            "type": "string",
+            "maxLength": 10000,
+            "nullable": true
+          },
+          "is_favorite": {
+            "type": "boolean",
+            "default": false
+          },
+          "tags": {
+            "type": "array",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "pattern": "\\S"
+            },
+            "description": "Owner-scoped label names: trimmed, NFC-normalized, case-insensitive uniqueness. Existing owner spelling is canonical. Omit on update to preserve, [] to clear.",
+            "default": []
+          }
+        },
+        "required": [
+          "id",
+          "deck_id",
+          "word",
+          "meaning"
+        ]
+      },
+      "CardUpdate": {
+        "type": "object",
+        "minProperties": 2,
+        "additionalProperties": false,
+        "properties": {
+          "base_version": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$",
+            "description": "Positive bigint serialized as a decimal string, not a JavaScript number."
+          },
+          "deck_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_document_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "word": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1
+          },
+          "meaning": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1
+          },
+          "phonetic": {
+            "type": "string",
+            "maxLength": 300,
+            "nullable": true
+          },
+          "source_sentence": {
+            "type": "string",
+            "maxLength": 10000,
+            "nullable": true
+          },
+          "ai_example": {
+            "type": "string",
+            "maxLength": 10000,
+            "nullable": true
+          },
+          "is_favorite": {
+            "type": "boolean",
+            "default": false
+          },
+          "tags": {
+            "type": "array",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "pattern": "\\S"
+            },
+            "description": "Owner-scoped label names: trimmed, NFC-normalized, case-insensitive uniqueness. Existing owner spelling is canonical. Omit on update to preserve, [] to clear."
+          }
+        },
+        "required": [
+          "base_version"
+        ]
+      },
+      "CardBatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/CardCreate"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "Deletion": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$",
+            "description": "Positive bigint serialized as a decimal string, not a JavaScript number."
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "deleted_at"
+        ]
+      },
+      "ProfileResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "DeckResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "$ref": "#/components/schemas/Deck"
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "CardResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "$ref": "#/components/schemas/Card"
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "DeletionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "$ref": "#/components/schemas/Deletion"
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "DeckListResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Deck"
+            }
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "requestId": {
+                "type": "string"
+              },
+              "pagination": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "has_more": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "limit",
+                  "offset",
+                  "has_more"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "CardListResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            }
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "requestId": {
+                "type": "string"
+              },
+              "pagination": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "has_more": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "limit",
+                  "offset",
+                  "has_more"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "HealthResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "SyncMutation": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "deck"
+                ]
+              },
+              "entity_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "create"
+                ]
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 4000,
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "base_version": {
+                "type": "string",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            },
+            "required": [
+              "operation_id",
+              "entity_type",
+              "entity_id",
+              "action",
+              "payload"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "card"
+                ]
+              },
+              "entity_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "create"
+                ]
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "deck_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "source_document_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  },
+                  "word": {
+                    "type": "string",
+                    "maxLength": 300,
+                    "minLength": 1
+                  },
+                  "meaning": {
+                    "type": "string",
+                    "maxLength": 4000,
+                    "minLength": 1
+                  },
+                  "phonetic": {
+                    "type": "string",
+                    "maxLength": 300,
+                    "nullable": true
+                  },
+                  "source_sentence": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "nullable": true
+                  },
+                  "ai_example": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "nullable": true
+                  },
+                  "is_favorite": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "tags": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 50,
+                      "pattern": "\\S"
+                    },
+                    "description": "Owner-scoped label names: trimmed, NFC-normalized, case-insensitive uniqueness. Existing owner spelling is canonical. Omit on update to preserve, [] to clear.",
+                    "default": []
+                  }
+                },
+                "required": [
+                  "deck_id",
+                  "word",
+                  "meaning"
+                ]
+              },
+              "base_version": {
+                "type": "string",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            },
+            "required": [
+              "operation_id",
+              "entity_type",
+              "entity_id",
+              "action",
+              "payload"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "deck"
+                ]
+              },
+              "entity_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "update"
+                ]
+              },
+              "payload": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 4000,
+                    "nullable": true
+                  }
+                }
+              },
+              "base_version": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]*$",
+                "maxLength": 19
+              }
+            },
+            "required": [
+              "operation_id",
+              "entity_type",
+              "entity_id",
+              "action",
+              "payload",
+              "base_version"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "card"
+                ]
+              },
+              "entity_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "update"
+                ]
+              },
+              "payload": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                  "deck_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "source_document_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  },
+                  "word": {
+                    "type": "string",
+                    "maxLength": 300,
+                    "minLength": 1
+                  },
+                  "meaning": {
+                    "type": "string",
+                    "maxLength": 4000,
+                    "minLength": 1
+                  },
+                  "phonetic": {
+                    "type": "string",
+                    "maxLength": 300,
+                    "nullable": true
+                  },
+                  "source_sentence": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "nullable": true
+                  },
+                  "ai_example": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "nullable": true
+                  },
+                  "is_favorite": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "tags": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 50,
+                      "pattern": "\\S"
+                    },
+                    "description": "Owner-scoped label names: trimmed, NFC-normalized, case-insensitive uniqueness. Existing owner spelling is canonical. Omit on update to preserve, [] to clear."
+                  }
+                }
+              },
+              "base_version": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]*$",
+                "maxLength": 19
+              }
+            },
+            "required": [
+              "operation_id",
+              "entity_type",
+              "entity_id",
+              "action",
+              "payload",
+              "base_version"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "deck",
+                  "card"
+                ]
+              },
+              "entity_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "delete"
+                ]
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              },
+              "base_version": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]*$",
+                "maxLength": 19
+              }
+            },
+            "required": [
+              "operation_id",
+              "entity_type",
+              "entity_id",
+              "action",
+              "payload",
+              "base_version"
+            ]
+          }
+        ]
+      },
+      "SyncBatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/SyncMutation"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "SyncReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "entity_type": {
+            "type": "string",
+            "enum": [
+              "deck",
+              "card"
+            ]
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "record": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Deck"
+              },
+              {
+                "$ref": "#/components/schemas/Card"
+              }
+            ]
+          }
+        },
+        "required": [
+          "operation_id",
+          "entity_type",
+          "entity_id",
+          "record"
+        ]
+      },
+      "SyncConflictDetails": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "entity_type": {
+            "type": "string",
+            "enum": [
+              "deck",
+              "card"
+            ]
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "version_mismatch",
+              "deleted",
+              "missing",
+              "missing_parent",
+              "id_exists",
+              "operation_reused",
+              "constraint"
+            ]
+          },
+          "server": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Deck"
+              },
+              {
+                "$ref": "#/components/schemas/Card"
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "operation_id",
+          "entity_type",
+          "entity_id",
+          "reason",
+          "server"
+        ]
+      },
+      "SyncBatchResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SyncReceipt"
+                }
+              }
+            },
+            "required": [
+              "results"
+            ]
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "SyncDelta": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "sequence": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$",
+            "maxLength": 19
+          },
+          "entity_type": {
+            "type": "string",
+            "enum": [
+              "deck",
+              "card"
+            ]
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "record": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Deck"
+              },
+              {
+                "$ref": "#/components/schemas/Card"
+              }
+            ]
+          }
+        },
+        "required": [
+          "sequence",
+          "entity_type",
+          "entity_id",
+          "record"
+        ]
+      },
+      "SyncChangesResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "changes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SyncDelta"
+                }
+              },
+              "has_more": {
+                "type": "boolean"
+              },
+              "next_cursor": {
+                "type": "string",
+                "maxLength": 2048,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              }
+            },
+            "required": [
+              "changes",
+              "has_more",
+              "next_cursor"
+            ]
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "ReviewInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "card_id",
+          "quality",
+          "reviewed_at",
+          "timezone_at_review",
+          "algorithm_version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "card_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true
+          },
+          "reviewed_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+          },
+          "timezone_at_review": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "algorithm_version": {
+            "type": "string",
+            "enum": [
+              "sm2-v1"
+            ]
+          }
+        }
+      },
+      "ReviewState": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "card_id",
+          "algorithm_version",
+          "repetitions",
+          "interval_days",
+          "ease_factor",
+          "total_reviews",
+          "last_reviewed_at",
+          "due_at"
+        ],
+        "properties": {
+          "card_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "algorithm_version": {
+            "type": "string",
+            "enum": [
+              "sm2-v1"
+            ]
+          },
+          "repetitions": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "interval_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 36500
+          },
+          "ease_factor": {
+            "type": "number",
+            "minimum": 1.3
+          },
+          "total_reviews": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "last_reviewed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "due_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ReviewEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "card_id",
+          "quality",
+          "score",
+          "reviewed_at",
+          "timezone_at_review",
+          "algorithm_version",
+          "received_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "card_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true
+          },
+          "reviewed_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+          },
+          "timezone_at_review": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "algorithm_version": {
+            "type": "string",
+            "enum": [
+              "sm2-v1"
+            ]
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ReviewResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "event",
+              "state"
+            ],
+            "properties": {
+              "event": {
+                "$ref": "#/components/schemas/ReviewInput"
+              },
+              "state": {
+                "$ref": "#/components/schemas/ReviewState"
+              }
+            }
+          },
+          "error": {
+            "type": "object",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      },
+      "ProgressSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "timezone",
+              "today",
+              "total_cards",
+              "new_count",
+              "relearning_count",
+              "learning_count",
+              "mastered_count",
+              "due_today_count",
+              "current_streak",
+              "total_reviews",
+              "activity"
+            ],
+            "properties": {
+              "timezone": {
+                "type": "string"
+              },
+              "today": {
+                "type": "string",
+                "format": "date"
+              },
+              "total_cards": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "new_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "relearning_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "learning_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "mastered_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "due_today_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "current_streak": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "total_reviews": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "activity": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "day",
+                    "reviews",
+                    "successful_reviews"
+                  ],
+                  "properties": {
+                    "day": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "reviews": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "successful_reviews": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "error": {
+            "type": "object",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      },
+      "ReviewHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewEvent"
+            }
+          },
+          "error": {
+            "type": "object",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pagination"
+            ],
+            "properties": {
+              "pagination": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "limit",
+                  "offset",
+                  "has_more"
+                ],
+                "properties": {
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "has_more": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReviewFeedEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "card_id",
+          "quality",
+          "score",
+          "reviewed_at",
+          "timezone_at_review",
+          "algorithm_version",
+          "received_at",
+          "user_id",
+          "sequence"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "card_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true
+          },
+          "reviewed_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+          },
+          "timezone_at_review": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "algorithm_version": {
+            "type": "string",
+            "enum": [
+              "sm2-v1"
+            ]
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sequence": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$"
+          }
+        }
+      },
+      "ReviewChanges": {
+        "type": "object",
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "error": {
+            "type": "object",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "events",
+              "has_more",
+              "next_cursor"
+            ],
+            "properties": {
+              "events": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ReviewFeedEvent"
+                }
+              },
+              "has_more": {
+                "type": "boolean"
+              },
+              "next_cursor": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "OcrBox": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height"
+        ]
+      },
+      "OcrWord": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "bbox": {
+            "$ref": "#/components/schemas/OcrBox"
+          },
+          "sentence_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "context": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "index",
+          "text",
+          "confidence",
+          "bbox",
+          "sentence_index",
+          "context"
+        ]
+      },
+      "OcrSentence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "word_indices": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "required": [
+          "index",
+          "text",
+          "word_indices"
+        ]
+      },
+      "OcrResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Normalized OCR engine score, not calibrated probability."
+          },
+          "language": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z]{2,3}$",
+                "description": "ISO language code; und when text is too short/uncertain."
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "TinyLD model score, not calibrated probability."
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "tinyld_text"
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "confidence",
+              "method"
+            ]
+          },
+          "image": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "width": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "height": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "processed_width": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1800
+              },
+              "processed_height": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2400
+              },
+              "coordinate_space": {
+                "type": "string",
+                "enum": [
+                  "upright_original_pixels"
+                ],
+                "description": "Coordinates on the EXIF-oriented original image, not raw encoded pixels or the resized OCR input."
+              }
+            },
+            "required": [
+              "width",
+              "height",
+              "processed_width",
+              "processed_height",
+              "coordinate_space"
+            ]
+          },
+          "words": {
+            "type": "array",
+            "maxItems": 20000,
+            "items": {
+              "$ref": "#/components/schemas/OcrWord"
+            }
+          },
+          "sentences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OcrSentence"
+            }
+          }
+        },
+        "required": [
+          "text",
+          "confidence",
+          "language",
+          "image",
+          "words",
+          "sentences"
+        ]
+      },
+      "OcrResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "$ref": "#/components/schemas/OcrResult"
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "processing_ms": {
+                "type": "number",
+                "minimum": 0
+              },
+              "requestId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "processing_ms"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "OcrRetryDetails": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "retry_after_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 60
+          }
+        },
+        "required": [
+          "retry_after_seconds"
+        ]
+      },
+      "AuthUser": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "AuthSession": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16377
+          },
+          "refresh_token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8192
+          },
+          "token_type": {
+            "type": "string",
+            "enum": [
+              "bearer"
+            ]
+          },
+          "expires_in": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400
+          }
+        },
+        "required": [
+          "access_token",
+          "refresh_token",
+          "token_type",
+          "expires_in"
+        ]
+      },
+      "AuthResult": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/AuthUser"
+              },
+              "session": {
+                "$ref": "#/components/schemas/AuthSession"
+              },
+              "requires_email_confirmation": {
+                "type": "boolean",
+                "enum": [
+                  false
+                ]
+              }
+            },
+            "required": [
+              "user",
+              "session",
+              "requires_email_confirmation"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "user": {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              },
+              "session": {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              },
+              "requires_email_confirmation": {
+                "type": "boolean",
+                "enum": [
+                  true
+                ]
+              }
+            },
+            "required": [
+              "user",
+              "session",
+              "requires_email_confirmation"
+            ]
+          }
+        ]
+      },
+      "AuthResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "data": {
+            "$ref": "#/components/schemas/AuthResult"
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "enum": [
+              null
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "metadata"
+        ]
+      },
+      "AuthRegister": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 72,
+            "writeOnly": true,
+            "description": "Preserved exactly; maximum 72 UTF-8 bytes, not just characters."
+          },
+          "captcha_token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "writeOnly": true
+          }
+        }
+      },
+      "AuthLogin": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 72,
+            "writeOnly": true,
+            "description": "Preserved exactly; maximum 72 UTF-8 bytes, not just characters."
+          },
+          "captcha_token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "writeOnly": true
+          }
+        }
+      },
+      "AuthRefresh": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8192,
+            "pattern": "^[\\x21-\\x7e]+$",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "refresh_token"
+        ]
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "Malformed request",
+        "headers": {
+          "x-request-id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "BAD_REQUEST",
+                "message": "Malformed request"
+              },
+              "metadata": {
+                "requestId": "example-request-id"
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Valid Supabase access token required",
+        "headers": {
+          "x-request-id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "UNAUTHORIZED",
+                "message": "Valid Supabase access token required"
+              },
+              "metadata": {
+                "requestId": "example-request-id"
+              }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Operation not permitted",
+        "headers": {
+          "x-request-id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "FORBIDDEN",
+                "message": "Operation not permitted"
+              },
+              "metadata": {
+                "requestId": "example-request-id"
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Resource not found",
+        "headers": {
+          "x-request-id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "NOT_FOUND",
+                "message": "Resource not found"
+              },
+              "metadata": {
+                "requestId": "example-request-id"
+              }
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "Version, duplicate ID or deleted parent conflict",
+        "headers": {
+          "x-request-id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "CONFLICT",
+                "message": "Version, duplicate ID or deleted parent conflict"
+              },
+              "metadata": {
+                "requestId": "example-request-id"
+              }
+            }
+          }
+        }
+      },
+      "413": {
+        "description": "JSON request body exceeds 1 MiB",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "HTTP_413",
+                "message": "Request rejected"
+              },
+              "metadata": {}
+            }
+          }
+        }
+      },
+      "422": {
+        "description": "Invalid request fields",
+        "headers": {
+          "x-request-id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Invalid request fields"
+              },
+              "metadata": {
+                "requestId": "example-request-id"
+              }
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Retry later",
+        "headers": {
+          "x-request-id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "RATE_LIMITED",
+                "message": "Retry later"
+              },
+              "metadata": {
+                "requestId": "example-request-id"
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Service temporarily unavailable",
+        "headers": {
+          "x-request-id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "INTERNAL_ERROR",
+                "message": "Service temporarily unavailable"
+              },
+              "metadata": {
+                "requestId": "example-request-id"
+              }
+            }
+          }
+        }
+      },
+      "503": {
+        "description": "Service temporarily unavailable",
+        "headers": {
+          "x-request-id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "status": "error",
+              "data": null,
+              "error": {
+                "code": "SERVICE_UNAVAILABLE",
+                "message": "Service temporarily unavailable"
+              },
+              "metadata": {
+                "requestId": "example-request-id"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+# Local development only; passwords here are deliberately non-secret demo values.
+services:
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_USER: cam_migrator
+      POSTGRES_PASSWORD: local_migration_only
+      POSTGRES_DB: vocabulary
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - cam_pgdata:/var/lib/postgresql/data
+      - ./database/local/bootstrap.sql:/docker-entrypoint-initdb.d/001-bootstrap.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cam_migrator -d vocabulary"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build: .
+    command: ["node", "scripts/migrate.mjs"]
+    environment:
+      NODE_ENV: development
+      DATABASE_SSL: "false"
+      MIGRATION_DATABASE_URL: postgresql://cam_migrator:local_migration_only@db:5432/vocabulary
+    depends_on:
+      db:
+        condition: service_healthy
+  backend:
+    build: .
+    environment:
+      NODE_ENV: development
+      PORT: "3000"
+      DATABASE_SSL: "false"
+      DATABASE_URL: postgresql://cam_backend:local_backend_only@db:5432/vocabulary
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY:-}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      OCR_ENGINE: native
+      OCR_WARMUP: "true"
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+volumes:
+  cam_pgdata:

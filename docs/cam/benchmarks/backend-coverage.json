@@ -1,0 +1,600 @@
+{
+  "generated_at": "2026-11-19T17:33:00.535Z",
+  "node": "v24.19.0",
+  "tool": "c8 9.1.0 / V8, TypeScript source maps",
+  "rule": "Every Service/Repository file: lines, statements, functions and branches strictly >85%",
+  "scope": "All src files reported; gate includes service/repository classes, OCR adapters/helpers and SM-2. Native transport fault tests use subprocess doubles; real OCR accuracy has separate evidence.",
+  "overall": {
+    "lines": {
+      "total": 1658,
+      "covered": 1630,
+      "skipped": 0,
+      "pct": 98.31
+    },
+    "statements": {
+      "total": 1658,
+      "covered": 1630,
+      "skipped": 0,
+      "pct": 98.31
+    },
+    "functions": {
+      "total": 186,
+      "covered": 181,
+      "skipped": 0,
+      "pct": 97.31
+    },
+    "branches": {
+      "total": 1054,
+      "covered": 988,
+      "skipped": 0,
+      "pct": 93.73
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "layers": {
+    "Service": {
+      "lines": {
+        "total": 806,
+        "covered": 806,
+        "pct": 100
+      },
+      "statements": {
+        "total": 806,
+        "covered": 806,
+        "pct": 100
+      },
+      "functions": {
+        "total": 76,
+        "covered": 75,
+        "pct": 98.68
+      },
+      "branches": {
+        "total": 461,
+        "covered": 429,
+        "pct": 93.06
+      }
+    },
+    "Repository": {
+      "lines": {
+        "total": 166,
+        "covered": 166,
+        "pct": 100
+      },
+      "statements": {
+        "total": 166,
+        "covered": 166,
+        "pct": 100
+      },
+      "functions": {
+        "total": 20,
+        "covered": 20,
+        "pct": 100
+      },
+      "branches": {
+        "total": 101,
+        "covered": 95,
+        "pct": 94.06
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "src/auth/auth-session.service.ts",
+      "layer": "Service",
+      "sha256": "fce556b9587241332e3717eb1b7dcb2a0ae2233bda84475c21041aa04f185741",
+      "metrics": {
+        "lines": {
+          "total": 53,
+          "covered": 53,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 53,
+          "covered": 53,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 71,
+          "covered": 70,
+          "skipped": 0,
+          "pct": 98.59
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/auth/supabase-auth.service.ts",
+      "layer": "Service",
+      "sha256": "5bfa377c5ff5c62c3a6b2b5179ee3cb9fc8e1c3f9fa0bfb2200c5711546988f6",
+      "metrics": {
+        "lines": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/database/database.service.ts",
+      "layer": "Service",
+      "sha256": "001bea571d4541ce9867092a06351823f7a86fa36242b5dff9ef351ffa8b2735",
+      "metrics": {
+        "lines": {
+          "total": 61,
+          "covered": 61,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 61,
+          "covered": 61,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 25,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 96
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/health/health.service.ts",
+      "layer": "Service",
+      "sha256": "b23352a79ea7328566e43a828020adb749178668138cb2d1dc219d034711ea24",
+      "metrics": {
+        "lines": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/learning/learning.repository.ts",
+      "layer": "Repository",
+      "sha256": "4cbb540a7c26f83d0dd44572f9c427e2d2e9066059e308afd67e650b3fb952ee",
+      "metrics": {
+        "lines": {
+          "total": 122,
+          "covered": 122,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 122,
+          "covered": 122,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 82,
+          "covered": 77,
+          "skipped": 0,
+          "pct": 93.9
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/learning/learning.service.ts",
+      "layer": "Service",
+      "sha256": "215cf174ac0c98629ee36d6df638a92556a12f3fa209c760de6c89f3f8c6656f",
+      "metrics": {
+        "lines": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 10,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/ocr/ocr-budget.ts",
+      "layer": "Service",
+      "sha256": "43e80b8c382a795acac557df96b5c6fe5ce41311ecbb18c8f3f1422c3dcba341",
+      "metrics": {
+        "lines": {
+          "total": 66,
+          "covered": 66,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 66,
+          "covered": 66,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 34,
+          "covered": 33,
+          "skipped": 0,
+          "pct": 97.05
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/ocr/ocr-engine.ts",
+      "layer": "Service",
+      "sha256": "6c0c4a7c4bfc876413cf2c9b8cd69068517c87e6124f6448e6e82e2f85d2fa53",
+      "metrics": {
+        "lines": {
+          "total": 82,
+          "covered": 82,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 10,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 90
+        },
+        "statements": {
+          "total": 82,
+          "covered": 82,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 39,
+          "covered": 34,
+          "skipped": 0,
+          "pct": 87.17
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/ocr/ocr-image.ts",
+      "layer": "Service",
+      "sha256": "988bafaf329d83fb031794c948c617f2af19bf2b8ece3264c31a93e164ccc985",
+      "metrics": {
+        "lines": {
+          "total": 35,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 35,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 30,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 93.33
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/ocr/ocr-native.ts",
+      "layer": "Service",
+      "sha256": "90eefd832c95a2f78d2bfcf7e1b9439e2e1e40991d3fcff67f5b60ea7c89a02a",
+      "metrics": {
+        "lines": {
+          "total": 101,
+          "covered": 101,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 101,
+          "covered": 101,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 59,
+          "covered": 55,
+          "skipped": 0,
+          "pct": 93.22
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/ocr/ocr-result.ts",
+      "layer": "Service",
+      "sha256": "349aefd7fda4c2633a34fb355a79c773a847786790076bf3ec6de1a1d4ccfe2e",
+      "metrics": {
+        "lines": {
+          "total": 52,
+          "covered": 52,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 52,
+          "covered": 52,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 36,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 86.11
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/ocr/ocr.service.ts",
+      "layer": "Service",
+      "sha256": "6c1c1d52ad8473637fe9981e8449e3756531e16cc4e1d5aa7d5680416c001c5a",
+      "metrics": {
+        "lines": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/profiles/profiles.repository.ts",
+      "layer": "Repository",
+      "sha256": "614b1c2eed42e6aeed7ed74423acfb7962e68c75bf1623b6d20fcd6ecd4f9df5",
+      "metrics": {
+        "lines": {
+          "total": 44,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 44,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 19,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 94.73
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/progress/progress.service.ts",
+      "layer": "Service",
+      "sha256": "9018bee805dd6ca3eb5e30908c4e4089e7974041b73012039af0af4bcbbfb318",
+      "metrics": {
+        "lines": {
+          "total": 120,
+          "covered": 120,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 120,
+          "covered": 120,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 47,
+          "covered": 40,
+          "skipped": 0,
+          "pct": 85.1
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/progress/sm2.ts",
+      "layer": "Service",
+      "sha256": "ce27554b1c965a93017b597f94ffcafa8b54f4e41687d81d1538265e6d626c42",
+      "metrics": {
+        "lines": {
+          "total": 43,
+          "covered": 43,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 43,
+          "covered": 43,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 23,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 95.65
+        }
+      },
+      "passed": true
+    },
+    {
+      "path": "src/sync/sync.service.ts",
+      "layer": "Service",
+      "sha256": "2f24ac70af8bbea557e914f0766ab14dcd54fc40a2259cfff63c13c732844fda",
+      "metrics": {
+        "lines": {
+          "total": 85,
+          "covered": 85,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 85,
+          "covered": 85,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 48,
+          "covered": 43,
+          "skipped": 0,
+          "pct": 89.58
+        }
+      },
+      "passed": true
+    }
+  ],
+  "passed": true
+}

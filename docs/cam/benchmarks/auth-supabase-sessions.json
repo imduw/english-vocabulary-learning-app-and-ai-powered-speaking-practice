@@ -1,0 +1,23 @@
+{
+  "checks": [
+    "proxy_login_A_B",
+    "bcrypt_and_independent_salts",
+    "refresh_rotates_pair_same_owner",
+    "refresh_parent_retry_exception",
+    "new_access_token_reads_profile",
+    "local_logout_rejects_root_and_latest_refresh",
+    "other_account_refresh_remains_valid",
+    "offline_access_token_remains_valid_until_expiry",
+    "close_only_created_test_sessions"
+  ],
+  "passed": true,
+  "sessions_closed": true,
+  "semantics": {
+    "provider": "Supabase Auth",
+    "refresh_tokens": "opaque, provider rotation with parent/reuse exceptions",
+    "strict_immediate_old_token_rejection": false,
+    "offline_JWT_revocation": "access token remains valid until expiry; logout revokes refresh session"
+  },
+  "generated_at": "2026-11-18T10:29:29.643Z",
+  "scope": "Proxy login/refresh + existing development users; read-only hash-format/salt-count checks; no registration/email/settings mutation. GET profile may provision missing profile."
+}

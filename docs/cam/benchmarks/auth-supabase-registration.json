@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "checks": [
+    "mailbox_not_preexisting_in_project",
+    "register_via_backend",
+    "stored_hash_and_confirmation_state",
+    "login_rejected_before_confirmation",
+    "provider_email_confirmed",
+    "login_and_profile_after_confirmation",
+    "new_account_refresh_rotation",
+    "logout_only_new_test_session"
+  ],
+  "email_delivery": "confirmed_by_mailbox_owner",
+  "sessions_closed": true,
+  "registration_http": 200,
+  "confirmation_policy": "email_confirmation_required",
+  "provider_confirmation_requested": true,
+  "status": "passed",
+  "scope": "One explicitly owned fresh mailbox; signup through temporary backend, read-only auth checks, manual real email confirmation, login/profile/refresh, local logout. No settings change, admin confirmation or account deletion. Account/profile retained.",
+  "generated_at": "2026-11-18T22:05:12.330Z"
+}

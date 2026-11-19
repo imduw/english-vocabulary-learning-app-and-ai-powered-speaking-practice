@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-11-19T17:37:43.926Z",
+  "environment": "Chrome/157.0.8103.79",
+  "scope": "Real headless browser, SQLite WASM/IndexedDB SharedWorker with two tabs and a private disposable profile",
+  "passed": true,
+  "checks": [
+    "web_queue_create",
+    "web_shared_worker_two_tabs",
+    "web_close_reopen_persistence",
+    "web_owner_isolation",
+    "web_migration_preserves_pending"
+  ],
+  "resources_closed": true
+}

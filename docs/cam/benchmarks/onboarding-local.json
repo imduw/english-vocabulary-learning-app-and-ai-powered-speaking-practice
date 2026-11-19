@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-11-18T10:28:34.051Z",
+  "scope": "Automated documented Compose install with a new project/database/volume and random loopback API port",
+  "prerequisites": "Docker engine/Compose >=2.24.4 and Node already installed; repository already available",
+  "cache_condition": "Existing Docker images/layer cache retained; database/volume freshly initialized. Not a cold-download or first-time human onboarding measurement.",
+  "elapsed_ms": 20515.19,
+  "target_ms": 900000,
+  "target_met": true,
+  "checks": [
+    {
+      "path": "/health",
+      "http": 200
+    },
+    {
+      "path": "/health/live",
+      "http": 200
+    },
+    {
+      "path": "/docs/",
+      "http": 200
+    },
+    {
+      "path": "/openapi.json",
+      "http": 200
+    },
+    {
+      "path": "/api/v1/user/profile",
+      "http": 401
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "http": 503
+    }
+  ],
+  "migration_exit": 0,
+  "resources_closed": true,
+  "passed": true
+}

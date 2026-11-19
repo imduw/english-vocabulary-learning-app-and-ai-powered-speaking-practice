@@ -1,0 +1,155 @@
+{
+  "generated_at": "2026-11-19T21:40:01.478Z",
+  "environment": "local Compose PostgreSQL, loopback Nest HTTP, ES256 JWT fixture, two owners, one API process",
+  "concurrency_limit": 32,
+  "max_in_flight": 32,
+  "requests": 460,
+  "runs": [
+    {
+      "name": "64_same_version_writes",
+      "requests": 64,
+      "elapsed_ms": 647.46
+    },
+    {
+      "name": "63_writes_with_128_reads",
+      "requests": 191,
+      "elapsed_ms": 2140.99
+    },
+    {
+      "name": "64_reviews_each_replayed_once",
+      "requests": 128,
+      "elapsed_ms": 6250.92
+    },
+    {
+      "name": "64_sync_receipt_replays",
+      "requests": 64,
+      "elapsed_ms": 614.62
+    }
+  ],
+  "deadlocks_delta": 0,
+  "consistency": {
+    "foreign_keys": [
+      {
+        "table": "card_tags",
+        "constraint": "card_tags_user_id_card_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "card_tags",
+        "constraint": "card_tags_user_id_tag_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "cards",
+        "constraint": "cards_user_id_deck_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "cards",
+        "constraint": "cards_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "cards",
+        "constraint": "cards_user_id_source_document_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "decks",
+        "constraint": "decks_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "media_assets",
+        "constraint": "media_assets_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "profiles",
+        "constraint": "profiles_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "review_events",
+        "constraint": "review_events_user_id_card_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "review_events",
+        "constraint": "review_events_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "review_heads",
+        "constraint": "review_heads_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "review_states",
+        "constraint": "review_states_user_id_card_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "source_documents",
+        "constraint": "source_documents_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "source_documents",
+        "constraint": "source_documents_user_id_media_id_media_kind_fkey",
+        "orphans": 0,
+        "has_leading_index": false
+      },
+      {
+        "table": "sync_changes",
+        "constraint": "sync_changes_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "sync_heads",
+        "constraint": "sync_heads_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "sync_receipts",
+        "constraint": "sync_receipts_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      },
+      {
+        "table": "tags",
+        "constraint": "tags_user_id_fkey",
+        "orphans": 0,
+        "has_leading_index": true
+      }
+    ],
+    "orphan_rows": 0,
+    "invalid_indexes": [],
+    "force_rls_tables": 13,
+    "index_review": [
+      {
+        "table": "source_documents",
+        "constraint": "source_documents_user_id_media_id_media_kind_fkey"
+      }
+    ],
+    "note": "FK index findings require workload review; not every child FK needs a dedicated index. Query plans/latency have separate evidence."
+  },
+  "fixture_cleanup": "soft_deleted_audit_retained",
+  "passed": true,
+  "limits": "Representative bounded burst, not production capacity or proof deadlocks are impossible. No Supabase data used."
+}

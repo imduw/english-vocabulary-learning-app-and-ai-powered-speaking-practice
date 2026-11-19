@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "checks": [
+    "fresh_owner_and_card_setup",
+    "concurrent_distinct_and_duplicate_reviews_across_processes",
+    "persisted_schedules_match_versioned_SM2_fixtures",
+    "late_reviews_replay_without_lost_updates",
+    "mastery_due_and_history_are_owner_scoped",
+    "bounded_queue_backpressure_preserves_retry_identity",
+    "final_event_and_feed_integrity"
+  ],
+  "backend_processes": 4,
+  "accounts": 8,
+  "concurrency": 48,
+  "fixture_cleanup": true,
+  "concurrent_review_requests": 256,
+  "concurrent_elapsed_ms": 2531.36,
+  "burst": {
+    "requests": 96,
+    "ok": 64,
+    "busy": 32
+  },
+  "final_events": 137,
+  "fixture_retention": "Fresh local accounts/profiles and immutable review audit retained; fixture decks/cards soft-deleted. No Supabase access.",
+  "resources_closed": true,
+  "http": {
+    "measured_requests": 369,
+    "status_counts": {
+      "200": 337,
+      "503": 32
+    },
+    "p50_ms": 426.54,
+    "p95_ms": 1870.41,
+    "max_ms": 2576.1
+  },
+  "generated_at": "2026-11-18T22:08:28.553Z",
+  "scope": "Local Windows/Linux Node + PostgreSQL TCP, 4 isolated backend processes, 8 owners/4 timezones/40 cards. Correctness and measured latency on this host; no production throughput or mobile SLA claim."
+}

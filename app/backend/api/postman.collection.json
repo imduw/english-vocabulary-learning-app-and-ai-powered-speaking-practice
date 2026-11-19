@@ -1,0 +1,568 @@
+{
+  "info": {
+    "name": "CAM Backend API — 0.9.0-draft",
+    "description": "25 implemented operations including public Supabase-backed Auth. Import a local environment and replace fictional credential/UUID examples before individual requests. Never export real tokens/passwords; do not run the full collection on shared data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "deck_id",
+      "value": "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      "key": "card_id",
+      "value": "30000000-0000-4000-8000-000000000001"
+    },
+    {
+      "key": "base_version",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "[implemented] getReadiness",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/health",
+        "description": "IMPLEMENTED: Runs SELECT 1; 200 when reachable, 503 otherwise.",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] getLiveness",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/health/live",
+        "description": "IMPLEMENTED: Independent of database availability.",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] getProfile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/user/profile",
+        "description": "IMPLEMENTED: Supabase bearer access token required. Profile GET/PATCH; PATCH checks base_version."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] updateProfile",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/user/profile",
+        "description": "IMPLEMENTED: Supabase bearer access token required. Profile GET/PATCH; PATCH checks base_version.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"base_version\": \"1\",\n  \"display_name\": \"Cảm\",\n  \"timezone\": \"Asia/Ho_Chi_Minh\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] listDecks",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/decks",
+        "description": "IMPLEMENTED: Implemented and protected by Supabase JWT. Contract awaits team review."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] createDeck",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/decks",
+        "description": "IMPLEMENTED: Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"20000000-0000-4000-8000-000000000001\",\n  \"name\": \"Everyday contexts\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] getDeck",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/decks/{{deck_id}}",
+        "description": "IMPLEMENTED: Implemented and protected by Supabase JWT. Contract awaits team review."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] updateDeck",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/decks/{{deck_id}}",
+        "description": "IMPLEMENTED: Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"base_version\": \"1\",\n  \"description\": \"Words from daily life\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] deleteDeck",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/decks/{{deck_id}}?base_version={{base_version}}",
+        "description": "IMPLEMENTED: Implemented; cascade soft-delete is a proposal awaiting Đức's review. Base version must match. Already deleted or inaccessible deck returns 404; stale version returns 409."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] listCards",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/vocabulary",
+        "description": "IMPLEMENTED: Implemented and protected by Supabase JWT. Contract awaits team review. Optional query: ?tag=Travel; q also searches tag names."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] createCard",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/vocabulary",
+        "description": "IMPLEMENTED: Implemented and protected by Supabase JWT. Contract awaits team review.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"30000000-0000-4000-8000-000000000001\",\n  \"deck_id\": \"20000000-0000-4000-8000-000000000001\",\n  \"word\": \"bank\",\n  \"meaning\": \"ngân hàng\",\n  \"source_sentence\": \"I went to the bank.\",\n  \"tags\": [\n    \"Travel\"\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] createCardsBatch",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/vocabulary/batch",
+        "description": "IMPLEMENTED: Implemented. All-or-nothing transaction. Any invalid item, duplicate UUID, inaccessible or deleted parent rejects the entire batch. Duplicate word values are valid. UUID conflicts return 409; replay receipts are reserved for CAM-09. Response order matches request; no pagination metadata.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"id\": \"30000000-0000-4000-8000-000000000001\",\n      \"deck_id\": \"20000000-0000-4000-8000-000000000001\",\n      \"word\": \"bank\",\n      \"meaning\": \"ngân hàng\",\n      \"tags\": [\n        \"Travel\"\n      ]\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] getCard",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/vocabulary/{{card_id}}",
+        "description": "IMPLEMENTED: Implemented and protected by Supabase JWT. Contract awaits team review."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] updateCard",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/vocabulary/{{card_id}}",
+        "description": "IMPLEMENTED: Implemented. Retains PUT route from CAM-05. Partial update by explicit contract: omitted fields unchanged; null clears nullable fields. base_version and at least one editable field required.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"base_version\": \"1\",\n  \"is_favorite\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] deleteCard",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/vocabulary/{{card_id}}?base_version={{base_version}}",
+        "description": "IMPLEMENTED: Implemented and protected by Supabase JWT. Contract awaits team review."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] syncBatch",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/sync/batch",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"operation_id\": \"40000000-0000-4000-8000-000000000001\",\n      \"entity_type\": \"deck\",\n      \"entity_id\": \"20000000-0000-4000-8000-000000000001\",\n      \"action\": \"create\",\n      \"payload\": {\n        \"name\": \"Offline deck\"\n      },\n      \"base_version\": null\n    },\n    {\n      \"operation_id\": \"40000000-0000-4000-8000-000000000002\",\n      \"entity_type\": \"card\",\n      \"entity_id\": \"30000000-0000-4000-8000-000000000001\",\n      \"action\": \"create\",\n      \"payload\": {\n        \"deck_id\": \"20000000-0000-4000-8000-000000000001\",\n        \"word\": \"bank\",\n        \"meaning\": \"ngân hàng\",\n        \"tags\": []\n      },\n      \"base_version\": null\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "New operation UUID per new intent. Preserve operation ID/payload/version when retrying. Fixture IDs are examples only."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] syncChanges",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/sync/changes?limit=100",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "description": "Use returned next_cursor for subsequent pages. Cursor and records must be applied atomically."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] recordReview",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/progress/review",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "IMPLEMENTED. See CAM-06 and OpenAPI for SM-2/timezone semantics. New UUID per new review; preserve request on retry. Replace fixture card ID.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"50000000-0000-4000-8000-000000000001\",\n  \"card_id\": \"30000000-0000-4000-8000-000000000001\",\n  \"quality\": 4,\n  \"score\": 80,\n  \"reviewed_at\": \"2026-11-16T00:00:00.000Z\",\n  \"timezone_at_review\": \"Asia/Ho_Chi_Minh\",\n  \"algorithm_version\": \"sm2-v1\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] getProgressSummary",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/progress/summary",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "description": "IMPLEMENTED. See CAM-06 and OpenAPI for SM-2/timezone semantics. New UUID per new review; preserve request on retry. Replace fixture card ID."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] getReviewHistory",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/progress/history?limit=20",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "description": "IMPLEMENTED. See CAM-06 and OpenAPI for SM-2/timezone semantics. New UUID per new review; preserve request on retry. Replace fixture card ID."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] getReviewChanges",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/progress/changes?limit=100",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "description": "Use next_cursor for subsequent pulls; this is separate from deck/card sync. Sync parent cards first. Apply events/states/cursor atomically."
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] processOcr",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/ocr/process",
+        "description": "Select one JPEG/PNG/WebP in form-data field image. Maximum 10 MiB/16MP. Do not manually set Content-Type; Postman supplies the multipart boundary. Requires access_token. Full contract and OCR benchmark are in docs/cam.",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "image",
+              "type": "file",
+              "src": []
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] registerAuth",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/auth/register",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Public JSON endpoint. No query parameters or owner/provider/redirect fields. Passwords are hashed/salted by Supabase; no local password/refresh-token table. Requires SUPABASE_PUBLISHABLE_KEY; missing configuration returns 503. Shared 30 attempts/60 seconds/socket IP/process, ignoring forwarded IP headers. Refresh tokens are opaque and rotate under Supabase reuse/parent exceptions, not strict immediate rejection of every prior token. Sign-up may send confirmation email per project settings; no confirmation emails are sent by automated integration tests.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"learner@example.com\",\n  \"password\": \"Example-only-passphrase!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] loginAuth",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/auth/login",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Public JSON endpoint. No query parameters or owner/provider/redirect fields. Passwords are hashed/salted by Supabase; no local password/refresh-token table. Requires SUPABASE_PUBLISHABLE_KEY; missing configuration returns 503. Shared 30 attempts/60 seconds/socket IP/process, ignoring forwarded IP headers. Refresh tokens are opaque and rotate under Supabase reuse/parent exceptions, not strict immediate rejection of every prior token. Sign-up may send confirmation email per project settings; no confirmation emails are sent by automated integration tests.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"learner@example.com\",\n  \"password\": \"Example-only-passphrase!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[implemented] refreshAuth",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/auth/refresh",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Public JSON endpoint. No query parameters or owner/provider/redirect fields. Passwords are hashed/salted by Supabase; no local password/refresh-token table. Requires SUPABASE_PUBLISHABLE_KEY; missing configuration returns 503. Shared 30 attempts/60 seconds/socket IP/process, ignoring forwarded IP headers. Refresh tokens are opaque and rotate under Supabase reuse/parent exceptions, not strict immediate rejection of every prior token. Sign-up may send confirmation email per project settings; no confirmation emails are sent by automated integration tests.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh_token\": \"EXAMPLE-REFRESH-TOKEN-NOT-VALID\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    }
+  ]
+}

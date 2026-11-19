@@ -1,0 +1,36 @@
+{
+  "name": "CAM Backend — supabase-dev",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "deck_id",
+      "value": "20000000-0000-4000-8000-000000000001",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "card_id",
+      "value": "30000000-0000-4000-8000-000000000001",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "base_version",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

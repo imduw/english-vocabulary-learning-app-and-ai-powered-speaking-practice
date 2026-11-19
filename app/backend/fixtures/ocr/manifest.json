@@ -1,0 +1,45 @@
+{
+  "description": "Original synthetic, non-personal OCR fixtures. Frozen PNG inputs; no third-party scans.",
+  "cases": [
+    {
+      "id": "standard-page",
+      "file": "standard-page.png",
+      "width": 2480,
+      "height": 3508,
+      "text": "Learning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.\nLearning English every day builds confidence and opens new opportunities.",
+      "word_count": 360,
+      "line_count": 36,
+      "sha256": "a64d4514796e50064403091f3cad3bb06274ff47797deb65da65013d95e42474"
+    },
+    {
+      "id": "varied-page",
+      "file": "varied-page.png",
+      "width": 2480,
+      "height": 3508,
+      "text": "Learning a new language begins with small actions that become familiar habits. A student can read a short story, write a few useful words, and listen to a friendly conversation. These activities create several ways to remember the same idea. Reading connects spelling with meaning. Listening connects sounds with words. Speaking gives the learner a chance to use the language for a real purpose. Each small activity supports the others and makes the next lesson easier.\n\nA useful vocabulary notebook includes more than a translation. It can contain an example sentence, a simple definition, and a personal connection. For example, someone who enjoys cooking may remember a new word by describing a favorite meal. Another person may connect the word with a recent journey. Personal examples give new language a place in everyday life. Reviewing these examples over several days helps the learner recognize the word in different situations and use it with confidence.\n\nSpeaking practice works best when the goal is clear and manageable. A learner might explain a picture, describe a plan for the weekend, or ask for directions. The first attempt does not need to be perfect. After speaking, the learner can notice one useful improvement and try again. This approach gives attention to progress instead of mistakes. A patient conversation partner can ask questions and offer examples without interrupting every sentence. Regular practice gradually makes the language more natural.\n\nGood learning materials offer both familiar language and a small challenge. If every word is unknown, the reader may lose the main idea. If everything is already easy, there is little opportunity to learn. A short article about a familiar subject can provide the right balance. The reader can understand the situation while discovering several useful expressions. Context also helps explain why a word has a particular meaning. The same word may express a different idea in another sentence.\n\nA flexible study plan makes room for real life. Some days allow time for a full lesson, while other days permit only a quick review. Both kinds of practice can be useful. Keeping a record of completed activities makes progress visible and helps the learner choose the next step. Rest is part of learning too. Returning to a topic after a break can reveal which words are familiar and which need another example. Consistent attention matters more than a perfect schedule.",
+      "word_count": 393,
+      "line_count": 34,
+      "sha256": "96fafecf6c6275562f33caf1177fe95706cfd373b1ac14c88d08976d84cf9afb"
+    },
+    {
+      "id": "english-small",
+      "file": "english-small.png",
+      "width": 1600,
+      "height": 620,
+      "text": "Learning English is useful. Practice speaking every day!\n\nA careful reader connects each new word with a complete sentence.",
+      "word_count": 19,
+      "line_count": 2,
+      "sha256": "a7b5497cd126f3e102147716013496f870a93b2771d2b520527c1c1e5326691e"
+    },
+    {
+      "id": "vietnamese-small",
+      "file": "vietnamese-small.png",
+      "width": 1700,
+      "height": 650,
+      "text": "Tôi đang học tiếng Việt mỗi ngày để giao tiếp tốt hơn.\n\nMỗi từ mới cần một câu ví dụ rõ ràng và dễ hiểu.\n\nHọc đều đặn giúp chúng ta ghi nhớ kiến thức lâu hơn.",
+      "word_count": 37,
+      "line_count": 3,
+      "sha256": "76811e1b9fea6c1b7ddbd8ba053e41b56c38a8d7928d6fc7e0bd2e4f87c9a886"
+    }
+  ]
+}

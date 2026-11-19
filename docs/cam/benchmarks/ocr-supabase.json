@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "supabase_OCR_login",
+    "supabase_runtime_profile_RLS",
+    "supabase_OCR_formats",
+    "supabase_OCR_original_boxes",
+    "supabase_OCR_close_session"
+  ],
+  "functional_pass": true,
+  "session_closed": true,
+  "generated_at": "2026-11-17T20:23:25.193Z"
+}
